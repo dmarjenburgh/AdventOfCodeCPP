@@ -36,7 +36,7 @@ int sum_values(const short *g) {
     return total;
 }
 
-void day6() {
+int main() {
     std::ifstream input_file{"assets/2015/input6.txt"};
     std::string line;
     short g[1000000]{};

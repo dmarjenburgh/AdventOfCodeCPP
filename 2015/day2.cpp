@@ -37,7 +37,7 @@ int ribbonLengthNeeded(const std::tuple<int, int, int> &dimensions) {
     return 2*(l + w + h - maxDim) + l*w*h;
 }
 
-void day2() {
+int main() {
     auto data = readInput("assets/2015/input2.txt");
     int totalWrappingPaper{0};
     int totalRibbonLength{0};

@@ -49,7 +49,7 @@ static int part2(const std::string &line) {
     return houses.size();
 }
 
-void day3() {
+int main() {
     std::string line;
     std::ifstream input_file{"assets/2015/input3.txt"};
     std::getline(input_file, line);
@@ -59,5 +59,4 @@ void day3() {
     std::printf("Part 1: %d\n", numHouses);
     numHouses = part2(line);
     std::printf("Part 2: %d\n", numHouses);
-
 }

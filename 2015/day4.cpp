@@ -15,7 +15,7 @@ int findHashWithPrefix(const std::string &base, const std::string &prefix) {
     }
 }
 
-void day4() {
+int main() {
     std::string input{"yzbqklnj"};
     std::printf("Part 1: %d\n", findHashWithPrefix(input, "00000"));
     std::printf("Part 2: %d\n", findHashWithPrefix(input, "000000"));

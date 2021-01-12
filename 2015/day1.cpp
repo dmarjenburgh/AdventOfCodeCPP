@@ -2,7 +2,7 @@
 #include <fstream>
 #include <string>
 
-void day1() {
+int main() {
     std::ifstream file("assets/2015/input1.txt", std::ifstream::in);
     std::string line;
     std::getline(file, line);
@@ -17,6 +17,4 @@ void day1() {
     }
     std::printf("Level: %d\n",floor);
     std::printf("First time basement: %d\n",firstTimeBasement);
-
 }
-
