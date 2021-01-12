@@ -3,7 +3,7 @@ project(aoc)
 
 set(CMAKE_CXX_STANDARD 17)
 
-add_executable(aoc main.cpp 2015/aoc.h 2015/day2.cpp 2015/day3.cpp 2015/day4.cpp 2015/day5.cpp 2015/day6.cpp)
+add_executable(aoc main.cpp 2015/aoc.h 2015/day2.cpp 2015/day3.cpp 2015/day4.cpp 2015/day5.cpp 2015/day6.cpp 2015/day1.cpp)
 
 # Look in vendor directory for libraries
 add_subdirectory(vendor)
