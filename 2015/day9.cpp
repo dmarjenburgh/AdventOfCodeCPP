@@ -15,7 +15,7 @@ int distance(const std::array<std::string, SIZE> &cities, distmap &distances) {
     return total;
 }
 
-int shortest_distance{std::numeric_limits<int>::max()};
+int shortest_distance{INT_MAX};
 int longest_distance{0};
 
 template<std::size_t SIZE>
