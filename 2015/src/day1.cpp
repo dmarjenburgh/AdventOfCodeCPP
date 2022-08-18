@@ -3,7 +3,7 @@
 #include <string>
 
 int main() {
-    std::ifstream file("assets/2015/input1.txt", std::ifstream::in);
+    std::ifstream file("assets/input1.txt", std::ifstream::in);
     std::string line;
     std::getline(file, line);
     int floor{};
