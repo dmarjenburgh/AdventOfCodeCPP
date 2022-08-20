@@ -31,7 +31,6 @@ int least_fuel_cost(const CrabPositions& p, DistanceFunction dist) {
   std::transform(distances.cbegin(), distances.cend(), costs.begin(),
                  [&p, &dist](const int& d) { return fuel_cost(p, d, dist); });
   const auto min_fuel = std::min_element(costs.cbegin(), costs.cend());
-  const auto best_pos_idx = std::distance(costs.cbegin(), min_fuel);
   return *min_fuel;
 }
 
