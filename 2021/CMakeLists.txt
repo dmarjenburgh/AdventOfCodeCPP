@@ -1,7 +1,7 @@
 project(AdventOfCode2021)
 
 FOREACH (n RANGE 1 12)
-    add_executable(2021-${n} ${PROJECT_SOURCE_DIR}/src/day${n}.cpp)
+    add_executable(2021-day${n} ${PROJECT_SOURCE_DIR}/src/day${n}.cpp)
 ENDFOREACH ()
 
 # Copy assets to build directory

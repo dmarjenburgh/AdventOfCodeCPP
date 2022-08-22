@@ -6,8 +6,10 @@
 #include <unordered_set>
 #include <vector>
 
-using Pos = std::string;
+// Storing the cave ids as ints for performance. String checking was a bit too slow.
+using Pos = int;
 using Path = std::deque<Pos>;
+enum { START = 0, END = -1 };
 
 class Caves {
   std::unordered_map<Pos, std::vector<Pos>> g;
@@ -18,41 +20,43 @@ class Caves {
   friend std::ostream& operator<<(std::ostream& os, const Caves& caves);
 };
 
+
 std::istream& operator>>(std::istream& is, Caves& caves) {
-  Pos k, v;
+  std::string k, v;
+  int id{};
+  std::unordered_map<std::string, Pos> m = {{"start", START}, {"end", END}};
   while (std::getline(is, k, '-')) {
     std::getline(is, v);
-    if (caves.g.contains(k))
-      caves.g[k].push_back(v);
-    else
-      caves.g[k] = {v};
-    if (caves.g.contains(v))
-      caves.g[v].push_back(k);
-    else
-      caves.g[v] = {k};
+    if (!m.contains(k)) m[k] = ++id + (islower(k[0]) ? 0 : 100); // Big caves have id > 100
+    if (!m.contains(v)) m[v] = ++id + (islower(v[0]) ? 0 : 100);
+
+    int ki{m.at(k)}, vi{m.at(v)};
+    caves.g[ki].push_back(vi);
+    caves.g[vi].push_back(ki);
   }
   return is;
 }
-std::ostream& operator<<(std::ostream& os, const Caves& caves) {
-  for (const auto& [k, v] : caves.g) {
-    os << k << " <-> ";
-    for (const auto& x : v) {
-      os << x << ' ';
-    }
-    os << '\n';
-  }
-  return os;
-}
+
+//std::ostream& operator<<(std::ostream& os, const Caves& caves) {
+//  for (const auto& [k, v] : caves.g) {
+//    os << k << " <-> ";
+//    for (const auto& x : v) {
+//      os << x << ' ';
+//    }
+//    os << '\n';
+//  }
+//  return os;
+//}
 
 size_t recursive_pathfinding(const Caves& caves, Path& path, bool can_revisit = false) {
   const auto& curPos{path.back()};
-  if (curPos == "end") return 1;
+  if (curPos == END) return 1;
   size_t num_paths{};
   for (const auto& nb : caves.connected_caves(curPos)) {
     bool next_revisit{can_revisit};
-    if (islower(nb[0])) {
+    if (nb < 100) {
       // Check if visit is possible for small cave
-      if (nb == "start") continue;
+      if (nb == START) continue;
       const bool already_visited{std::find(path.cbegin(), path.cend(), nb) != std::end(path)};
       if (already_visited and !can_revisit) continue;
       if (already_visited) next_revisit = false;
@@ -69,7 +73,7 @@ int main() {
   std::ifstream file{"assets/input12.txt"};
   Caves caves;
   file >> caves;
-  Path path = {"start"};
+  Path path = {START};
   std::printf("Part 1: %lu\n", recursive_pathfinding(caves, path));
   std::printf("Part 2: %lu\n", recursive_pathfinding(caves, path, true));
 }
