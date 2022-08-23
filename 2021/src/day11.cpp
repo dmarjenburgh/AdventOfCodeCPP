@@ -27,8 +27,8 @@ struct Point {
 };
 
 Point operator+(const Point& lhs, const Point& rhs) { return Point{lhs.x + rhs.x, lhs.y + rhs.y}; }
-template <>
 
+template <>
 struct std::hash<Point> {
   std::size_t operator()(const Point& point) const noexcept {
     std::size_t h1 = std::hash<int>{}(point.x);
