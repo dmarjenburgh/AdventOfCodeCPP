@@ -34,7 +34,7 @@ void permute(std::array<std::string, SIZE> &cities, int k, distmap &m) {
 }
 
 int main() {
-    std::ifstream input_file{"assets/2015/input9.txt"};
+    std::ifstream input_file{"assets/input9.txt"};
     std::string line{};
     std::unordered_map<std::string, int> dists;
     std::array<std::string, 8> cities{};

@@ -17,7 +17,7 @@ int add_numbers(const std::string &s) {
 
 int main() {
 
-    std::ifstream input_file{"assets/2015/input12.txt"};
+    std::ifstream input_file{"assets/input12.txt"};
     std::string line;
     std::getline(input_file, line);
     input_file.close();

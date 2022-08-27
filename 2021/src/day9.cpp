@@ -4,35 +4,9 @@
 #include <sstream>
 #include <stack>
 #include <vector>
+#include "lib/matrix.hpp"
 
 using Grid = std::vector<std::vector<int>>;
-
-struct Point {
-  int x;
-  int y;
-
-  Point() : x(0), y(0) {}
-  Point(int _x, int _y) : x(_x), y(_y) {}
-
-  Point& operator+=(const Point& rhs) {
-    x += rhs.x;
-    y += rhs.y;
-    return *this;
-  }
-
-  auto operator<=>(const Point&) const = default;
-
-  friend Point operator+(const Point& lhs, const Point& rhs);
-
-  friend std::ostream& operator<<(std::ostream& os, const Point& point);
-};
-
-Point operator+(const Point& lhs, const Point& rhs) { return Point{lhs.x + rhs.x, lhs.y + rhs.y}; }
-
-std::ostream& operator<<(std::ostream& os, const Point& point) {
-  os << '(' << point.x << "," << point.y << ')';
-  return os;
-}
 
 struct HeightMap {
   Grid grid;
@@ -43,17 +17,17 @@ struct HeightMap {
 
   [[nodiscard]] std::vector<Point> neighbours(const Point& point) const {
     std::vector<Point> ns;
-    if (point.x > 0) ns.emplace_back(point.x - 1, point.y);
-    if (point.y > 0) ns.emplace_back(point.x, point.y - 1);
-    if (point.x < width - 1) ns.emplace_back(point.x + 1, point.y);
-    if (point.y < height - 1) ns.emplace_back(point.x, point.y + 1);
+    if (point.x > 0) ns.emplace_back(Point{point.x - 1, point.y});
+    if (point.y > 0) ns.emplace_back(Point{point.x, point.y - 1});
+    if (point.x < width - 1) ns.emplace_back(Point{point.x + 1, point.y});
+    if (point.y < height - 1) ns.emplace_back(Point{point.x, point.y + 1});
     return ns;
   }
   [[nodiscard]] std::vector<Point> points() const {
     std::vector<Point> p;
     for (int row{0}; row < height; ++row) {
       for (int col{0}; col < width; ++col) {
-        p.emplace_back(col, row);
+        p.emplace_back(Point{col, row});
       }
     }
     return p;

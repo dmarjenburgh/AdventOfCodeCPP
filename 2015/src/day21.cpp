@@ -111,7 +111,7 @@ std::pair<int, int> tryAll(Warrior& player, Warrior& boss) {
 
 int main() {
     auto player = Warrior{100, 0, 0};
-    auto boss = parse_stats("assets/2015/input21.txt");
+    auto boss = parse_stats("assets/input21.txt");
     auto[min_cost, max_cost] = tryAll(player, boss);
     std::cout << "Part 1: " << min_cost << '\n';
     std::cout << "Part 2: " << max_cost << '\n';

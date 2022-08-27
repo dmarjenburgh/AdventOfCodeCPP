@@ -23,7 +23,7 @@ static bool isNiceString2(const std::string &s) {
 
 
 int main() {
-    std::ifstream input_file{"assets/2015/input5.txt"};
+    std::ifstream input_file{"assets/input5.txt"};
     std::string line;
     int nicestrings = 0;
     int nicestrings2 = 0;

@@ -182,7 +182,7 @@ bool fight(Wizard w, Boss b) {
 
 int main() {
     auto player = Wizard{50, 500};
-    auto boss = parse_stats("assets/2015/input22.txt");
+    auto boss = parse_stats("assets/input22.txt");
     fight(Wizard(10, 250), Boss(14, 8));
     std::cin.get();
 }

@@ -4,7 +4,7 @@
 
 using pos = std::pair<int, int>;
 
-static int part1(const std::string &line) {
+static size_t part1(const std::string &line) {
     int x{}, y{};
     std::map<pos, int> houses;
     houses[{x, y}] = 1;
@@ -25,7 +25,7 @@ static int part1(const std::string &line) {
     return houses.size();
 }
 
-static int part2(const std::string &line) {
+static size_t part2(const std::string &line) {
     int sx{}, sy{}, rx{}, ry{};
     std::map<pos, int> houses;
     houses[{sx, sy}] = 2;
@@ -51,12 +51,12 @@ static int part2(const std::string &line) {
 
 int main() {
     std::string line;
-    std::ifstream input_file{"assets/2015/input3.txt"};
+    std::ifstream input_file{"assets/input3.txt"};
     std::getline(input_file, line);
     input_file.close();
 
-    int numHouses = part1(line);
-    std::printf("Part 1: %d\n", numHouses);
+    size_t numHouses = part1(line);
+    std::printf("Part 1: %lu\n", numHouses);
     numHouses = part2(line);
-    std::printf("Part 2: %d\n", numHouses);
+    std::printf("Part 2: %lu\n", numHouses);
 }

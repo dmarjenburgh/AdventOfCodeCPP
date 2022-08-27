@@ -65,7 +65,7 @@ void print_grid(const Grid& g) {
 }
 
 int main() {
-    std::ifstream input_file{"assets/2015/input18.txt"};
+    std::ifstream input_file{"assets/input18.txt"};
     int row{};
     std::string line;
     Grid g;

@@ -1,41 +1,11 @@
 #include <array>
-#include <compare>
 #include <fstream>
 #include <iostream>
 #include <queue>
 #include <unordered_set>
 #include <vector>
 
-struct Point {
-  int x;
-  int y;
-
-  Point() : x(0), y(0) {}
-  Point(int _x, int _y) : x(_x), y(_y) {}
-
-  Point& operator+=(const Point& rhs) {
-    x += rhs.x;
-    y += rhs.y;
-    return *this;
-  }
-
-  auto operator<=>(const Point&) const = default;
-
-  friend Point operator+(const Point& lhs, const Point& rhs);
-
-  friend std::ostream& operator<<(std::ostream& os, const Point& point);
-};
-
-Point operator+(const Point& lhs, const Point& rhs) { return Point{lhs.x + rhs.x, lhs.y + rhs.y}; }
-
-template <>
-struct std::hash<Point> {
-  std::size_t operator()(const Point& point) const noexcept {
-    std::size_t h1 = std::hash<int>{}(point.x);
-    std::size_t h2 = std::hash<int>{}(point.y);
-    return h1 ^ (h2 << 1);
-  }
-};
+#include "lib/matrix.hpp"
 
 using Field = std::array<std::array<int, 10>, 10>;
 
@@ -49,7 +19,7 @@ class Grid {
     std::vector<Point> nbs;
     for (const int dx : {-1, 0, 1}) {
       for (const int dy : {-1, 0, 1}) {
-        const Point npoint = point + Point(dx, dy);
+        const Point npoint = point + Point{dx, dy};
         if ((dx or dy) and npoint.x >= 0 and npoint.x < width and npoint.y >= 0 and
             npoint.y < height) {
           nbs.emplace_back(npoint);
@@ -65,7 +35,7 @@ class Grid {
     std::vector<Point> r;
     for (int row{0}; row < height; ++row) {
       for (int col{0}; col < width; ++col) {
-        r.emplace_back(col, row);
+        r.emplace_back(Point{col, row});
       }
     }
     return r;

@@ -43,7 +43,7 @@ std::string reduce(const std::string& molecule, const std::multimap<std::string,
 }
 
 int main() {
-    std::ifstream input_file{"assets/2015/input19.txt"};
+    std::ifstream input_file{"assets/input19.txt"};
     std::string line;
     std::multimap<std::string, std::string> reactions;
 

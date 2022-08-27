@@ -39,13 +39,10 @@ int main() {
   }
   // Epsilon rate is just the complement (with masking)
   int epsilon_rate = ~gamma_rate & ~(-1 << width);
-  std::printf("gamma rate: %d, epsilon rate: %d\n", gamma_rate, epsilon_rate);
   std::cout << "Part 1: " << gamma_rate * epsilon_rate << std::endl;
 
   // Part 2
   const int oxygen_generator_rating{majority_sift(ints, width, true)};
   const int co2_scrubber_rating{majority_sift(ints, width, false)};
-  std::printf("oxygen generator rating: %i\nco2 scrubber rating: %i\n", oxygen_generator_rating,
-              co2_scrubber_rating);
   std::printf("Part 2: %d\n", oxygen_generator_rating * co2_scrubber_rating);
 }

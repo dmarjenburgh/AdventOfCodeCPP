@@ -37,7 +37,7 @@ int sum_values(const short *g) {
 }
 
 int main() {
-    std::ifstream input_file{"assets/2015/input6.txt"};
+    std::ifstream input_file{"assets/input6.txt"};
     std::string line;
     short g[1000000]{};
     short g2[1000000]{};

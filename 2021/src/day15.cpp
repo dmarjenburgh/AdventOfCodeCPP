@@ -3,37 +3,11 @@
 #include <fstream>
 #include <iostream>
 #include <queue>
-#include <sstream>
-#include <unordered_map>
 #include <vector>
 
+#include "lib/matrix.hpp"
+
 using Grid = std::vector<std::vector<int>>;
-
-// TODO: Re-use Point struct from day 11
-struct Point {
-  int x{};
-  int y{};
-
-  Point() = default;
-  Point(const Point& point) = default;
-  Point(int x, int y) : x(x), y(y) {}
-
-  Point& operator+=(const Point& rhs) {
-    x += rhs.x;
-    y += rhs.y;
-    return *this;
-  }
-  friend Point operator+(const Point& lhs, const Point& rhs);
-  auto operator<=>(const Point&) const = default;
-  friend std::ostream& operator<<(std::ostream& os, const Point& point) {
-    return os << '(' << point.x << ',' << point.y << ')';
-  }
-};
-
-template <>
-struct std::hash<Point> {
-  std::size_t operator()(const Point& point) const noexcept { return point.x ^ (point.y << 1); }
-};
 
 struct Field {
   Grid g;
@@ -47,7 +21,7 @@ struct Field {
 
     std::vector<Point> nbs;
     nbs.reserve(4); // Prevent memory re-allocations
-    for (const Point& dp : {Point(0, -1), Point(-1, 0), Point(0, 1), Point(1, 0)}) {
+    for (const Point& dp : {Point{0, -1}, Point{-1, 0}, Point{0, 1}, Point{1, 0}}) {
       const Point npoint = point + dp;
       if (npoint.x >= 0 and npoint.x < width and npoint.y >= 0 and npoint.y < height) {
         nbs.emplace_back(npoint);
@@ -103,8 +77,6 @@ std::istream& operator>>(std::istream& is, Field& field) {
   field.width = static_cast<int>(field.g[0].size());
   return is;
 }
-
-Point operator+(const Point& lhs, const Point& rhs) { return Point{lhs.x + rhs.x, lhs.y + rhs.y}; }
 
 template <class CostFunction, class Heuristic, class CostType = int>
 CostType a_star(Field& f, const Point& start, const Point& goal, const CostFunction& cost_function,

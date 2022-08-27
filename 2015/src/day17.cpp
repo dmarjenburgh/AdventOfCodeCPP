@@ -23,7 +23,7 @@ int numsubsets(const FI from, const FI to, int target, const int size, std::vect
 }
 
 int main() {
-    std::ifstream input_file{"assets/2015/input17.txt"};
+    std::ifstream input_file{"assets/input17.txt"};
     std::vector<int> sizes;
     std::string line;
     while (std::getline(input_file, line)) {

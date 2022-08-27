@@ -13,7 +13,7 @@ int calculate_happiness(const std::vector<std::string> &names, std::unordered_ma
 }
 
 int main() {
-    std::ifstream input_file{"assets/2015/input13.txt"};
+    std::ifstream input_file{"assets/input13.txt"};
     std::unordered_map<std::string, int> rels;
     std::string line;
     std::regex r{R"((\w+) would (\w+) (\d+) happiness units by sitting next to (\w+)\.)"};

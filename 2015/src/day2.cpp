@@ -14,7 +14,7 @@ std::vector<std::tuple<int, int, int>> readInput(const std::string &fname) {
     while (std::getline(input_file, line)) {
         std::smatch sm;
         std::regex_match(line, sm, r);
-        lines.push_back(std::make_tuple(std::stoi(sm[1]), std::stoi(sm[2]), std::stoi(sm[3])));
+        lines.emplace_back(std::stoi(sm[1]), std::stoi(sm[2]), std::stoi(sm[3]));
     }
     input_file.close();
     return lines;
@@ -38,7 +38,7 @@ int ribbonLengthNeeded(const std::tuple<int, int, int> &dimensions) {
 }
 
 int main() {
-    auto data = readInput("assets/2015/input2.txt");
+    auto data = readInput("assets/input2.txt");
     int totalWrappingPaper{0};
     int totalRibbonLength{0};
     for (const auto &line: data) {

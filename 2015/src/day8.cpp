@@ -3,7 +3,7 @@
 
 
 int main() {
-    std::ifstream input_file{"assets/2015/input8.txt"};
+    std::ifstream input_file{"assets/input8.txt"};
     std::string line;
     int code_size{};
     int mem_size{};

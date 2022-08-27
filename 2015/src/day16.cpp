@@ -40,7 +40,7 @@ bool is_match2(const Map& m1) {
 }
 
 int main() {
-    std::ifstream input_file{"assets/2015/input16.txt"};
+    std::ifstream input_file{"assets/input16.txt"};
     std::string line;
     std::regex r{R"(Sue (\d+): (\w+): (\d+), (\w+): (\d+), (\w+): (\d+))"};
     std::vector<Map> aunts;

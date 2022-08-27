@@ -87,7 +87,7 @@ ushort resolve(const std::string &wire, std::map<std::string, Gate> &gates) {
 }
 
 int main() {
-    std::ifstream input_file{"assets/2015/input7.txt"};
+    std::ifstream input_file{"assets/input7.txt"};
     std::map<std::string, Gate> gates{};
     std::string line;
     while (std::getline(input_file, line)) {
