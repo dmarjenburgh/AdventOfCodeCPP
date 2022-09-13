@@ -1,6 +1,6 @@
 project(AdventOfCode2021)
 
-FOREACH (n RANGE 1 20)
+FOREACH (n RANGE 1 21)
     add_executable(2021-day${n} ${PROJECT_SOURCE_DIR}/src/day${n}.cpp)
 ENDFOREACH ()
 
