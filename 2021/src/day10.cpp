@@ -1,7 +1,7 @@
 #include <fstream>
 #include <iostream>
 #include <set>
-#include <sstream>
+#include <cinttypes>
 #include <stack>
 #include <unordered_map>
 #include <vector>
@@ -53,5 +53,5 @@ int main() {
   std::sort(completion_scores.begin(), completion_scores.end());
   const uint64_t median_score{completion_scores[completion_scores.size() / 2]};
   std::printf("Part 1: %i\n", error_score);
-  std::printf("Part 2: %llu\n", median_score);
+  std::printf("Part 2: %" PRId64 "\n", median_score);
 }
