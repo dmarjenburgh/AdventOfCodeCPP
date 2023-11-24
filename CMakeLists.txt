@@ -5,6 +5,7 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0")
 add_subdirectory(2015)
 add_subdirectory(2021)
+add_subdirectory(2022)
 
 # Util library for common tasks and data structures
 add_subdirectory(${CMAKE_SOURCE_DIR}/lib)

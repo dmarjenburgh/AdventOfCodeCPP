@@ -6,7 +6,7 @@
 #include <unordered_map>
 #include <vector>
 
-const std::set<char> opening_delims = {'(', '[', '{', '<'};
+const std::set opening_delims = {'(', '[', '{', '<'};
 
 const std::unordered_map<char, char> matching_delim = {
     {')', '('}, {']', '['}, {'}', '{'}, {'>', '<'}};
