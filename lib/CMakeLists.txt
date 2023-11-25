@@ -1,4 +1,5 @@
-add_library(matrix STATIC
-        ${CMAKE_CURRENT_SOURCE_DIR}/matrix.cpp)
+add_library(utils STATIC
+        src/matrix.cpp
+        src/IOUtils.cpp)
 
-target_include_directories(matrix PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_include_directories(utils PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
