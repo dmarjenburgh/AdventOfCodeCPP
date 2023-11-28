@@ -48,7 +48,7 @@ std::tuple<Stacks, std::vector<Instruction>> parseInput() {
     for(auto it{div+1}; it!=lines.end();++it) {
         std::smatch sm;
         std::regex_match(*it, sm, re);
-        instructions.push_back(Instruction{
+        instructions.emplace_back(Instruction{
                 .from = std::stoi(sm[2])-1,
                 .to = std::stoi(sm[3])-1,
                 .amount = std::stoi(sm[1])
@@ -73,23 +73,19 @@ void makeMove2(Stacks &state, const Instruction& instruction) {
 
 
 std::string topCrates(const Stacks &state) {
-    return std::accumulate(state.begin(), state.end(), std::string{}, [](auto acc, auto s) { return acc + s.back(); });
+    std::stringstream ss;
+    ranges::for_each(state, [&ss](auto &crate) { ss << crate.back(); });
+    return ss.str();
 }
 
 int main() {
     auto [stacks, instructions]{parseInput()};
-    std::vector<Stack> stacks_copy{stacks};
+    std::vector<Stack> stacks2{stacks};
 
     for (const auto & item : instructions) {
         makeMove(stacks, item);
+        makeMove2(stacks2, item);
     }
     std::cout << "Part 1: " << topCrates(stacks) << '\n';
-
-    stacks = std::move(stacks_copy);
-
-    for (const auto & item : instructions) {
-        makeMove2(stacks, item);
-    }
-
-    std::cout << "Part 2: " << topCrates(stacks) << '\n';
+    std::cout << "Part 2: " << topCrates(stacks2) << '\n';
 }
