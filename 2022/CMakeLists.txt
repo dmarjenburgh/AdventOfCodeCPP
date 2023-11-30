@@ -1,6 +1,6 @@
 project(AdventOfCode2022)
 
-FOREACH (n RANGE 1 7)
+FOREACH (n RANGE 1 8)
     add_executable(2022-day${n} src/day${n}.cpp)
     target_link_libraries(2022-day${n} PRIVATE utils)
 ENDFOREACH ()
