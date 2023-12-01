@@ -15,7 +15,7 @@ FishCounts parseinput() {
   return counts;
 }
 
-void iteration(FishCounts& state) {
+void iteration(FishCounts &state) {
   uint64_t newfish{state[0]};
   for (int days_left{0}; days_left < 8; ++days_left) {
     state[days_left] = state[days_left + 1];
@@ -25,7 +25,8 @@ void iteration(FishCounts& state) {
 }
 
 uint64_t process_days(FishCounts state, const int days) {
-  for (int d{0}; d < days; ++d) iteration(state);
+  for (int d{0}; d < days; ++d)
+    iteration(state);
   uint64_t sum{};
   std::for_each(state.cbegin(), state.cend(), [&sum](uint64_t n) { sum += n; });
   return sum;

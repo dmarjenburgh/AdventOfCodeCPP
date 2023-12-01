@@ -19,14 +19,14 @@ struct ReinderState {
 };
 
 template <typename T, typename U>
-U max_fn(const T* states, size_t to, U func(U, T)) {
+U max_fn(const T *states, size_t to, U func(U, T)) {
   return std::accumulate(&states[0], &states[to], 0, func);
 }
 
 int max_dist(int acc, ReinderState r) { return std::max(acc, r.distance); }
 int max_points(int acc, ReinderState r) { return std::max(acc, r.points); }
 
-std::pair<int, int> race(const std::vector<Reindeer>& reindeers, int t_end) {
+std::pair<int, int> race(const std::vector<Reindeer> &reindeers, int t_end) {
   ReinderState states[reindeers.size()];
   for (int i{}; i < reindeers.size(); ++i) {
     states[i].action = ReinderState::running;
@@ -37,7 +37,8 @@ std::pair<int, int> race(const std::vector<Reindeer>& reindeers, int t_end) {
   for (int t{0}; t < t_end; ++t) {
     for (int i{}; i < reindeers.size(); ++i) {
       if (states[i].t_left) {
-        if (states[i].action == ReinderState::running) states[i].distance += reindeers[i].speed;
+        if (states[i].action == ReinderState::running)
+          states[i].distance += reindeers[i].speed;
       } else {
         if (states[i].action == ReinderState::running) {
           states[i].action = ReinderState::resting;
@@ -51,8 +52,9 @@ std::pair<int, int> race(const std::vector<Reindeer>& reindeers, int t_end) {
       --states[i].t_left;
     }
     int mxdist{max_fn(states, reindeers.size(), max_dist)};
-    for (auto& st : states) {
-      if (st.distance == mxdist) ++st.points;
+    for (auto &st : states) {
+      if (st.distance == mxdist)
+        ++st.points;
     }
   }
   int mxdist{max_fn(states, reindeers.size(), max_dist)};
@@ -69,7 +71,8 @@ int main() {
   while (std::getline(input_file, line)) {
     std::smatch sm;
     std::regex_match(line, sm, r);
-    reindeers.emplace_back(Reindeer{std::stoi(sm[1]), std::stoi(sm[2]), std::stoi(sm[3])});
+    reindeers.emplace_back(
+        Reindeer{std::stoi(sm[1]), std::stoi(sm[2]), std::stoi(sm[3])});
   }
   auto [p1, p2] = race(reindeers, 2503);
   std::cout << "Part 1: " << p1 << std::endl;

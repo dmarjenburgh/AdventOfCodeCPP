@@ -5,28 +5,29 @@
 #include <sstream>
 #include <vector>
 
-template <class T, size_t L>
-struct Vector {
+template <class T, size_t L> struct Vector {
   std::array<T, L> elems;
 
-  T& operator[](size_t i) { return elems[i]; }
-  const T& operator[](size_t i) const { return elems[i]; }
-  bool operator<(const Vector& w) const { return this->elems < w.elems; }
-  bool operator>(const Vector& w) const { return this->elems > w.elems; }
-  bool operator==(const Vector& w) const { return this->elems == w.elems; }
-  Vector operator+(const Vector& w) const {
+  T &operator[](size_t i) { return elems[i]; }
+  const T &operator[](size_t i) const { return elems[i]; }
+  bool operator<(const Vector &w) const { return this->elems < w.elems; }
+  bool operator>(const Vector &w) const { return this->elems > w.elems; }
+  bool operator==(const Vector &w) const { return this->elems == w.elems; }
+  Vector operator+(const Vector &w) const {
     std::array<T, L> res{};
-    std::transform(elems.cbegin(), elems.cend(), w.elems.cbegin(), res.begin(), std::plus<>());
+    std::transform(elems.cbegin(), elems.cend(), w.elems.cbegin(), res.begin(),
+                   std::plus<>());
     return {res};
   }
-  void operator+=(const Vector& w) {
+  void operator+=(const Vector &w) {
     for (size_t i{0}; i < L; ++i) {
       elems[i] += w[i];
     }
   }
-  Vector operator-(const Vector& w) const {
+  Vector operator-(const Vector &w) const {
     std::array<T, L> res{};
-    std::transform(elems.cbegin(), elems.cend(), w.elems.cbegin(), res.begin(), std::minus<>());
+    std::transform(elems.cbegin(), elems.cend(), w.elems.cbegin(), res.begin(),
+                   std::minus<>());
     return {res};
   }
 
@@ -36,26 +37,26 @@ struct Vector {
     return {res};
   }
 
-  friend std::ostream& operator<<(std::ostream& os, const Vector& vector);
-  friend std::istream& operator>>(std::istream& is, Vector<T, L>& vector);
+  friend std::ostream &operator<<(std::ostream &os, const Vector &vector);
+  friend std::istream &operator>>(std::istream &is, Vector<T, L> &vector);
 };
 
 using Vec = Vector<int, 3>;
 using Scanner = std::vector<Vec>;
 
 template <class T, size_t L>
-std::ostream& operator<<(std::ostream& os, const Vector<T, L>& vector) {
+std::ostream &operator<<(std::ostream &os, const Vector<T, L> &vector) {
   os << "[ ";
-  for (const auto& x : vector.elems) {
+  for (const auto &x : vector.elems) {
     os << x << ' ';
   }
   os << "]";
   return os;
 }
 
-std::ostream& operator<<(std::ostream& os, const Vec& vector) {
+std::ostream &operator<<(std::ostream &os, const Vec &vector) {
   os << "[ ";
-  for (const auto& x : vector.elems) {
+  for (const auto &x : vector.elems) {
     os << x << ' ';
   }
   os << "]";
@@ -63,17 +64,17 @@ std::ostream& operator<<(std::ostream& os, const Vec& vector) {
 }
 
 template <class T, size_t L>
-std::istream& operator>>(std::istream& is, Vector<T, L>& vector) {
+std::istream &operator>>(std::istream &is, Vector<T, L> &vector) {
   return is;
 }
 
-std::istream& operator>>(std::istream& is, Vec& vector) {
+std::istream &operator>>(std::istream &is, Vec &vector) {
   char delim;
   is >> vector.elems[0] >> delim >> vector.elems[1] >> delim >> vector.elems[2];
   return is;
 }
 
-std::istream& operator>>(std::istream& is, Scanner& s) {
+std::istream &operator>>(std::istream &is, Scanner &s) {
   std::string line;
   while (std::getline(is, line)) {
     if (line.empty()) {
@@ -88,19 +89,18 @@ std::istream& operator>>(std::istream& is, Scanner& s) {
   return is;
 }
 
-std::ostream& operator<<(std::ostream& os, const Scanner& s) {
+std::ostream &operator<<(std::ostream &os, const Scanner &s) {
   os << "--- scanner ---\n";
-  for (const auto& v : s) {
+  for (const auto &v : s) {
     os << v << '\n';
   }
   return os;
 }
 
-template <class T, size_t M, size_t N>
-class Matrix {
+template <class T, size_t M, size_t N> class Matrix {
   std::array<int, M * N> _elems{};
 
- public:
+public:
   constexpr static Matrix identity() {
     static_assert(M == N, "Identity matrix must be a square matrix");
     Matrix m;
@@ -110,10 +110,12 @@ class Matrix {
     return m;
   }
 
-  constexpr T& operator()(size_t m, size_t n) { return _elems[m * N + n]; }
-  constexpr T operator()(size_t m, size_t n) const { return _elems[m * N + n]; };
+  constexpr T &operator()(size_t m, size_t n) { return _elems[m * N + n]; }
+  constexpr T operator()(size_t m, size_t n) const {
+    return _elems[m * N + n];
+  };
 
-  Matrix operator+(const Matrix& m) {
+  Matrix operator+(const Matrix &m) {
     Matrix<T, M, N> sum;
     for (int i{0}; i < M; ++i) {
       for (int j{0}; j < N; ++j) {
@@ -124,14 +126,15 @@ class Matrix {
   };
 
   template <size_t K, size_t L>
-  constexpr Matrix<T, M, L> operator*(const Matrix<T, K, L>& m) const {
+  constexpr Matrix<T, M, L> operator*(const Matrix<T, K, L> &m) const {
     static_assert(N == K, "Matrix dimensions don't match for multiplication");
     Matrix<T, M, L> product;
     for (int i{0}; i < M; ++i) {
       for (int j{0}; j < L; ++j) {
         product(i, j) = [&]() -> T {
           T sum{};
-          for (int k{0}; k < N; ++k) sum += (*this)(i, k) * m(k, j);
+          for (int k{0}; k < N; ++k)
+            sum += (*this)(i, k) * m(k, j);
           return sum;
         }();
       }
@@ -139,7 +142,7 @@ class Matrix {
     return product;
   };
 
-  Vector<T, M> operator*(const Vector<T, M>& v) const {
+  Vector<T, M> operator*(const Vector<T, M> &v) const {
     Vector<T, M> res{};
     for (int r{0}; r < N; ++r) {
       for (int c{0}; c < M; ++c) {
@@ -150,11 +153,11 @@ class Matrix {
   }
 
   template <size_t K, size_t L>
-  constexpr bool operator==(const Matrix<T, K, L>& m) const {
+  constexpr bool operator==(const Matrix<T, K, L> &m) const {
     return M == K and N == L and this->_elems == m._elems;
   }
 
-  friend std::ostream& operator<<(std::ostream& os, const Matrix& matrix) {
+  friend std::ostream &operator<<(std::ostream &os, const Matrix &matrix) {
     for (int r{0}; r < M; ++r) {
       os << "[ ";
       for (int c{0}; c < N; ++c) {
@@ -181,8 +184,9 @@ constexpr Mat3D fromCols(std::array<std::array<int, 3>, 3> cols) {
 std::array<Mat3D, 24> rotMatrices() {
   using Col3 = std::array<std::array<int, 3>, 3>;
 
-  const auto det = [](const Mat3D& m) {
-    return m(0, 0) * (m(1, 1) * m(2, 2) - m(1, 2) * m(2, 1)) + m(0, 1) * (m(1, 2) * m(2, 0) - m(1, 0) * m(2, 2)) +
+  const auto det = [](const Mat3D &m) {
+    return m(0, 0) * (m(1, 1) * m(2, 2) - m(1, 2) * m(2, 1)) +
+           m(0, 1) * (m(1, 2) * m(2, 0) - m(1, 0) * m(2, 2)) +
            m(0, 2) * (m(1, 0) * m(2, 1) - m(1, 1) * m(2, 0));
   };
   const auto flipsign = [](Col3 arr, std::array<bool, 3> flips) {
@@ -208,52 +212,59 @@ std::array<Mat3D, 24> rotMatrices() {
             r[i] = m2;
             i++;
           }
-        } while (std::next_permutation(arr.begin(), arr.end(), std::greater<>()));
+        } while (
+            std::next_permutation(arr.begin(), arr.end(), std::greater<>()));
       }
   return r;
 }
 
 static std::array<Mat3D, 24> isometries{rotMatrices()};
 
-Scanner operator*(const Mat3D& r, const Scanner& s) {
+Scanner operator*(const Mat3D &r, const Scanner &s) {
   Scanner res;
   res.reserve(s.size());
-  std::transform(s.cbegin(), s.cend(), std::back_inserter(res), [&r](const auto& p) { return r * p; });
+  std::transform(s.cbegin(), s.cend(), std::back_inserter(res),
+                 [&r](const auto &p) { return r * p; });
   return res;
 }
 
-// This allows out = r * s without allocating memory in the *-operator. Could not find a simple different way.
-void transform_scanner(const Mat3D& r, const Scanner& s, Scanner& out) {
+// This allows out = r * s without allocating memory in the *-operator. Could
+// not find a simple different way.
+void transform_scanner(const Mat3D &r, const Scanner &s, Scanner &out) {
   out.resize(s.size());
-  std::transform(s.cbegin(), s.cend(), out.begin(), [&r](const auto& p) { return r * p; });
+  std::transform(s.cbegin(), s.cend(), out.begin(),
+                 [&r](const auto &p) { return r * p; });
 }
 
-void transform_scanner(const Vec& v, const Scanner& s, Scanner& out) {
+void transform_scanner(const Vec &v, const Scanner &s, Scanner &out) {
   out.resize(s.size());
-  std::transform(s.cbegin(), s.cend(), out.begin(), [&v](const auto& p) { return v + p; });
+  std::transform(s.cbegin(), s.cend(), out.begin(),
+                 [&v](const auto &p) { return v + p; });
 }
 
-Scanner operator-(const Scanner& s, const Vec& v) {
+Scanner operator-(const Scanner &s, const Vec &v) {
   Scanner t;
   t.reserve(s.size());
-  std::transform(s.cbegin(), s.cend(), std::back_inserter(t), [&v](const auto& w) { return w - v; });
+  std::transform(s.cbegin(), s.cend(), std::back_inserter(t),
+                 [&v](const auto &w) { return w - v; });
   return t;
 }
-Scanner operator+(const Scanner& s, const Vec& v) {
+Scanner operator+(const Scanner &s, const Vec &v) {
   Scanner t;
   t.reserve(s.size());
-  std::transform(s.cbegin(), s.cend(), std::back_inserter(t), [&v](const auto& w) { return w + v; });
+  std::transform(s.cbegin(), s.cend(), std::back_inserter(t),
+                 [&v](const auto &w) { return w + v; });
   return t;
 }
 
-void operator+=(Scanner& s, const Vec& w) {
-  for (auto& v : s) {
+void operator+=(Scanner &s, const Vec &w) {
+  for (auto &v : s) {
     v += w;
   }
 }
 
 // This functions dominates execution time
-bool common_points(const Scanner& s1, const Scanner& s2) {
+bool common_points(const Scanner &s1, const Scanner &s2) {
   size_t i{}, j{}, n{};
 
   while (i < s1.size() && j < s2.size() && n < 12) {
@@ -270,8 +281,8 @@ bool common_points(const Scanner& s1, const Scanner& s2) {
   return n == 12;
 }
 
-std::optional<Vec> match_beacons(const Scanner& s1, const Scanner& s2) {
-  static Scanner s1c, s2c, s2tl;  // attempt to re-use allocated memory
+std::optional<Vec> match_beacons(const Scanner &s1, const Scanner &s2) {
+  static Scanner s1c, s2c, s2tl; // attempt to re-use allocated memory
   static Vec d;
   s1c = s1;
   s2c = s2;
@@ -280,7 +291,7 @@ std::optional<Vec> match_beacons(const Scanner& s1, const Scanner& s2) {
 
   for (size_t i{0}; i < s1.size(); ++i) {
     for (size_t j{0}; j < s2.size(); ++j) {
-      d = s1c[i] - s2c[j];  // This is the vector from s1 to s2, in s1's frame
+      d = s1c[i] - s2c[j]; // This is the vector from s1 to s2, in s1's frame
       s2tl = s2c;
       s2tl += d;
       if (common_points(s1c, s2tl)) {
@@ -298,9 +309,9 @@ std::optional<Vec> match_beacons(const Scanner& s1, const Scanner& s2) {
  * If v1 in s1 and v2 in s2 point to the same beacon, then d = v1 - r*v2
  * where r is the rotation matrix.
  */
-std::optional<Vec> match_scanners(const Scanner& s1, Scanner& s2) {
-  static Scanner rotated_sc2;  // Re-use allocated memory across invocations
-  for (const auto& r : isometries) {
+std::optional<Vec> match_scanners(const Scanner &s1, Scanner &s2) {
+  static Scanner rotated_sc2; // Re-use allocated memory across invocations
+  for (const auto &r : isometries) {
     transform_scanner(r, s2, rotated_sc2);
     const auto m{match_beacons(s1, rotated_sc2)};
     if (m.has_value()) {
@@ -312,7 +323,7 @@ std::optional<Vec> match_scanners(const Scanner& s1, Scanner& s2) {
   return std::nullopt;
 }
 
-std::vector<Scanner> parse_input(const std::string& fname) {
+std::vector<Scanner> parse_input(const std::string &fname) {
   std::fstream file{fname};
   std::string line;
   std::vector<Scanner> scanners;
@@ -327,7 +338,7 @@ std::vector<Scanner> parse_input(const std::string& fname) {
 }
 
 template <class T, size_t L>
-size_t manhattan_dist(const Vector<T, L>& v, const Vector<T, L>& w) {
+size_t manhattan_dist(const Vector<T, L> &v, const Vector<T, L> &w) {
   size_t d{};
   for (size_t i{}; i < L; ++i) {
     d += abs(v[i] - w[i]);
@@ -346,11 +357,11 @@ int main() {
   scanner_positions[0] = {0, 0, 0};
   while (!stack.empty()) {
     size_t si{stack.top()};
-    const Scanner& s{scanners[si]};
+    const Scanner &s{scanners[si]};
     stack.pop();
     for (int i{0}; i < scanners.size(); ++i) {
       if (!processed[i]) {
-        if (const auto& d{match_scanners(s, scanners[i])}; d.has_value()) {
+        if (const auto &d{match_scanners(s, scanners[i])}; d.has_value()) {
           processed[i] = true;
           stack.push(i);
           scanner_positions[i] = d.value();
@@ -361,7 +372,7 @@ int main() {
   // Merge all
   Scanner all_beacons;
   all_beacons.reserve(scanners[0].size() * scanners.size());
-  for (const auto& s : scanners) {
+  for (const auto &s : scanners) {
     std::copy(s.begin(), s.end(), std::back_inserter(all_beacons));
   }
   std::sort(all_beacons.begin(), all_beacons.end());
@@ -374,7 +385,8 @@ int main() {
   for (size_t i{}; i < scanner_positions.size(); ++i) {
     for (size_t j{i + 1}; j < scanner_positions.size(); ++j) {
       const auto d{manhattan_dist(scanner_positions[i], scanner_positions[j])};
-      if (d >= max_dist) max_dist = d;
+      if (d >= max_dist)
+        max_dist = d;
     }
   }
   std::printf("Part 2: %lu\n", max_dist);

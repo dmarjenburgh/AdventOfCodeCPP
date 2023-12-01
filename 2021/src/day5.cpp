@@ -13,7 +13,7 @@ std::pair<PointSet, PointSet> parseinput() {
   std::ifstream file("assets/input5.txt", std::ifstream::in);
   std::string line;
   PointSet points;
-  PointSet points2;  // With diagonals
+  PointSet points2; // With diagonals
   while (std::getline(file, line)) {
     std::stringstream ss{line};
     int x1, y1, x2, y2;
@@ -22,21 +22,25 @@ std::pair<PointSet, PointSet> parseinput() {
     const int dx{sgn(x2 - x1)}, dy{sgn(y2 - y1)};
     while (x1 != x2 || y1 != y2) {
       points2.push_back({x1, y1});
-      if (!dx || !dy) points.push_back({x1, y1});
+      if (!dx || !dy)
+        points.push_back({x1, y1});
       x1 += dx;
       y1 += dy;
     }
     points2.push_back({x1, y1});
-    if (!dx || !dy) points.push_back({x1, y1});
+    if (!dx || !dy)
+      points.push_back({x1, y1});
   }
 
   return {points, points2};
 }
 
-unsigned int num_overlaps(const PointSet& points) {
+unsigned int num_overlaps(const PointSet &points) {
   std::map<Point2D, size_t> freqs;
-  for (const auto& p : points) freqs[p] += 1;
-  return std::count_if(freqs.cbegin(), freqs.cend(), [](const auto kv) { return kv.second > 1; });
+  for (const auto &p : points)
+    freqs[p] += 1;
+  return std::count_if(freqs.cbegin(), freqs.cend(),
+                       [](const auto kv) { return kv.second > 1; });
 }
 
 int main() {

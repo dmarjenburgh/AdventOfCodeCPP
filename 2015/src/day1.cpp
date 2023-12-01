@@ -1,20 +1,20 @@
-#include <iostream>
 #include <fstream>
+#include <iostream>
 #include <string>
 
 int main() {
-    std::ifstream file("assets/input1.txt", std::ifstream::in);
-    std::string line;
-    std::getline(file, line);
-    int floor{};
-    int i{};
-    int firstTimeBasement{};
-    for (const auto &c : line) {
-        i++;
-        floor += c == '(' ? 1 : -1;
-        if (floor < 0 && !firstTimeBasement)
-            firstTimeBasement = i;
-    }
-    std::printf("Level: %d\n",floor);
-    std::printf("First time basement: %d\n",firstTimeBasement);
+  std::ifstream file("assets/input1.txt", std::ifstream::in);
+  std::string line;
+  std::getline(file, line);
+  int floor{};
+  int i{};
+  int firstTimeBasement{};
+  for (const auto &c : line) {
+    i++;
+    floor += c == '(' ? 1 : -1;
+    if (floor < 0 && !firstTimeBasement)
+      firstTimeBasement = i;
+  }
+  std::printf("Level: %d\n", floor);
+  std::printf("First time basement: %d\n", firstTimeBasement);
 }

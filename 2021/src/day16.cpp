@@ -24,7 +24,7 @@ class BITS {
     _bits_left = 32;
   }
 
- public:
+public:
   size_t total_bits_read{};
 
   /**
@@ -50,21 +50,22 @@ class BITS {
     }
   }
 
-  friend std::istream& operator>>(std::istream& is, BITS& bits);
+  friend std::istream &operator>>(std::istream &is, BITS &bits);
 };
 
-std::istream& operator>>(std::istream& is, BITS& bits) {
+std::istream &operator>>(std::istream &is, BITS &bits) {
   std::getline(is, bits._s);
   return is;
 }
 
-uint64_t read_literal_value(BITS& bits) {
+uint64_t read_literal_value(BITS &bits) {
   uint64_t p{};
   do {
     uint32_t b{bits.read(5)};
     p <<= 4;
     p |= b & ~(~0u << 4);
-    if (!(b >> 4)) break;
+    if (!(b >> 4))
+      break;
   } while (true);
   return p;
 }
@@ -72,26 +73,23 @@ uint64_t read_literal_value(BITS& bits) {
 struct Package {
   uint32_t version;
   uint32_t type_id;
-  uint32_t length_type_id;  // For operations
-  uint64_t v;               // Literal value / length of subpackages / number of subpackages
+  uint32_t length_type_id; // For operations
+  uint64_t v; // Literal value / length of subpackages / number of subpackages
   std::vector<Package> subpackages;
 
-  Package(uint32_t version, uint32_t typeId, uint32_t length_type_id, uint64_t v,
-          std::vector<Package>& subpackages)
-      : version(version),
-        type_id(typeId),
-        length_type_id(length_type_id),
-        v(v),
+  Package(uint32_t version, uint32_t typeId, uint32_t length_type_id,
+          uint64_t v, std::vector<Package> &subpackages)
+      : version(version), type_id(typeId), length_type_id(length_type_id), v(v),
         subpackages(subpackages) {}
 
-  friend std::ostream& operator<<(std::ostream& os, const Package& p) {
+  friend std::ostream &operator<<(std::ostream &os, const Package &p) {
     p._print(os);
     return os;
   }
 
- private:
+private:
   // Prints the package in edn-format, LOL
-  std::ostream& _print(std::ostream& os, size_t indent = 0) const {
+  std::ostream &_print(std::ostream &os, size_t indent = 0) const {
     std::string tab(1, ' ');
     std::string ind(indent, ' ');
     os << ind << "{\n"
@@ -104,7 +102,8 @@ struct Package {
       os << "]\n";
     else {
       os << '\n';
-      for (const auto& sp : subpackages) sp._print(os, indent + 4);
+      for (const auto &sp : subpackages)
+        sp._print(os, indent + 4);
       os << ind << tab << "]\n";
     }
     os << ind << "}\n";
@@ -112,7 +111,7 @@ struct Package {
   }
 };
 
-Package read_package(BITS& bits) {
+Package read_package(BITS &bits) {
   uint32_t version{bits.read(3)};
   uint32_t type_id{bits.read(3)};
   uint64_t v;
@@ -139,47 +138,49 @@ Package read_package(BITS& bits) {
   return {version, type_id, length_type_id, v, subpackages};
 }
 
-size_t version_sum(const Package& p) {
+size_t version_sum(const Package &p) {
   size_t sum{p.version};
-  for (const auto& sp : p.subpackages) {
+  for (const auto &sp : p.subpackages) {
     sum += version_sum(sp);
   }
   return sum;
 }
 
-size_t evaluate_expression(const Package& p) {
+size_t evaluate_expression(const Package &p) {
   size_t value{};
   std::vector<size_t> svals;
-  std::transform(p.subpackages.cbegin(), p.subpackages.cend(), std::back_inserter(svals),
-                 evaluate_expression);
+  std::transform(p.subpackages.cbegin(), p.subpackages.cend(),
+                 std::back_inserter(svals), evaluate_expression);
 
   switch (p.type_id) {
-    case 0:
-      value = std::accumulate(svals.cbegin(), svals.cend(), size_t{}, std::plus<>());
-      break;
-    case 1:
-      value = std::accumulate(svals.cbegin(), svals.cend(), size_t{1}, std::multiplies<>());
-      break;
-    case 2:
-      value = *std::min_element(svals.cbegin(), svals.cend());
-      break;
-    case 3:
-      value = *std::max_element(svals.cbegin(), svals.cend());
-      break;
-    case 4:
-      value = p.v;
-      break;
-    case 5:
-      value = svals[0] > svals[1];
-      break;
-    case 6:
-      value = svals[0] < svals[1];
-      break;
-    case 7:
-      value = svals[0] == svals[1];
-      break;
-    default:
-      std::cerr << "Invalid type_id: " << p.type_id << '\n';
+  case 0:
+    value =
+        std::accumulate(svals.cbegin(), svals.cend(), size_t{}, std::plus<>());
+    break;
+  case 1:
+    value = std::accumulate(svals.cbegin(), svals.cend(), size_t{1},
+                            std::multiplies<>());
+    break;
+  case 2:
+    value = *std::min_element(svals.cbegin(), svals.cend());
+    break;
+  case 3:
+    value = *std::max_element(svals.cbegin(), svals.cend());
+    break;
+  case 4:
+    value = p.v;
+    break;
+  case 5:
+    value = svals[0] > svals[1];
+    break;
+  case 6:
+    value = svals[0] < svals[1];
+    break;
+  case 7:
+    value = svals[0] == svals[1];
+    break;
+  default:
+    std::cerr << "Invalid type_id: " << p.type_id << '\n';
   }
   return value;
 }

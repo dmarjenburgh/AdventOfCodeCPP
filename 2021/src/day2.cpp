@@ -33,15 +33,15 @@ int main() {
   // Part 1
   for (const auto [command, amount] : parseinput()) {
     switch (command) {
-      case Command::forward:
-        hor_pos += amount;
-        break;
-      case Command::up:
-        depth -= amount;
-        break;
-      case Command::down:
-        depth += amount;
-        break;
+    case Command::forward:
+      hor_pos += amount;
+      break;
+    case Command::up:
+      depth -= amount;
+      break;
+    case Command::down:
+      depth += amount;
+      break;
     }
   }
 
@@ -53,18 +53,17 @@ int main() {
   depth = 0;
   for (const auto [command, amount] : parseinput()) {
     switch (command) {
-      case Command::forward:
-        hor_pos += amount;
-        depth += aim * amount;
-        break;
-      case Command::up:
-        aim -= amount;
-        break;
-      case Command::down:
-        aim += amount;
-        break;
+    case Command::forward:
+      hor_pos += amount;
+      depth += aim * amount;
+      break;
+    case Command::up:
+      aim -= amount;
+      break;
+    case Command::down:
+      aim += amount;
+      break;
     }
   }
   std::cout << "Part 2: " << hor_pos * depth << std::endl;
-
 }

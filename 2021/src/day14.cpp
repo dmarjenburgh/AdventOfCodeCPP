@@ -7,9 +7,9 @@
 using Chain = std::unordered_map<std::string, size_t>;
 using Mapping = std::unordered_map<std::string, char>;
 
-void step(Chain& chain, const Mapping& m) {
+void step(Chain &chain, const Mapping &m) {
   Chain nextchain;
-  for (const auto& kv : chain) {
+  for (const auto &kv : chain) {
     const auto it = m.find(kv.first);
     if (it != std::end(m)) {
       nextchain[{kv.first[0], it->second}] += kv.second;
@@ -21,14 +21,14 @@ void step(Chain& chain, const Mapping& m) {
   std::swap(chain, nextchain);
 }
 
-size_t score(Chain& chain) {
+size_t score(Chain &chain) {
   std::vector<size_t> v(26, 0);
-  for (const auto& [s, n] : chain) {
+  for (const auto &[s, n] : chain) {
     v[s[1] - 'A'] += n;
   }
   v[chain.begin()->first[0] - 'A'] += chain.begin()->second;
   size_t min{std::numeric_limits<size_t>::max()}, max{};
-  for (const auto& c : v) {
+  for (const auto &c : v) {
     if (c) {
       if (c > max)
         max = c;
@@ -61,10 +61,12 @@ int main() {
   }
 
   // Perform 10 steps
-  for (int i{0}; i < 10; ++i) step(chain, m);
+  for (int i{0}; i < 10; ++i)
+    step(chain, m);
   std::printf("Part 1: %lu\n", score(chain));
 
   // Perform 30 more steps
-  for (int i{0}; i < 30; ++i) step(chain, m);
+  for (int i{0}; i < 30; ++i)
+    step(chain, m);
   std::printf("Part 2: %lu\n", score(chain));
 }

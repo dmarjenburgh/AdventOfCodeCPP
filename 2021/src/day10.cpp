@@ -1,7 +1,7 @@
+#include <cinttypes>
 #include <fstream>
 #include <iostream>
 #include <set>
-#include <cinttypes>
 #include <stack>
 #include <unordered_map>
 #include <vector>
@@ -42,7 +42,8 @@ int main() {
       // Line incomplete
       uint64_t completion_score{};
       while (!stack.empty()) {
-        completion_score = completion_score * 5 + completion_scoring_table.at(stack.top());
+        completion_score =
+            completion_score * 5 + completion_scoring_table.at(stack.top());
         stack.pop();
       }
       completion_scores.push_back(completion_score);

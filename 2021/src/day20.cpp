@@ -15,15 +15,16 @@ struct Image {
   int max_x;
   int min_y;
   int max_y;
-  friend std::ostream& operator<<(std::ostream&, const Image&);
-  friend std::istream& operator>>(std::istream&, Image&);
+  friend std::ostream &operator<<(std::ostream &, const Image &);
+  friend std::istream &operator>>(std::istream &, Image &);
 
   void step() {
     pxbuffer.clear();
 
     for (int r{min_y - 1}; r < max_y + 1; ++r) {
       for (int c{min_x - 1}; c < max_x + 1; ++c) {
-        if (get_output_pixel(c, r) == '#') pxbuffer.insert({c, r});
+        if (get_output_pixel(c, r) == '#')
+          pxbuffer.insert({c, r});
       }
     }
     std::swap(pixels, pxbuffer);
@@ -42,7 +43,7 @@ struct Image {
 
   [[nodiscard]] size_t num_pixels_lit() const { return pixels.size(); }
 
- private:
+private:
   Pixels pxbuffer;
   char out_of_bound_px;
 
@@ -51,7 +52,8 @@ struct Image {
     for (int dy : {-1, 0, 1}) {
       for (int dx : {-1, 0, 1}) {
         out <<= 1;
-        if (x + dx < min_x || x + dx >= max_x || y + dy < min_y || y + dy >= max_y) {
+        if (x + dx < min_x || x + dx >= max_x || y + dy < min_y ||
+            y + dy >= max_y) {
           out |= out_of_bound_px == '#';
         } else {
           out |= pixels.contains({x + dx, y + dy});
@@ -62,8 +64,9 @@ struct Image {
   }
 };
 
-std::ostream& operator<<(std::ostream& os, const Image& im) {
-  for (int c{im.min_x - 1}; c <= im.max_x; ++c) os << im.out_of_bound_px;
+std::ostream &operator<<(std::ostream &os, const Image &im) {
+  for (int c{im.min_x - 1}; c <= im.max_x; ++c)
+    os << im.out_of_bound_px;
   os << '\n';
   for (int r{im.min_y}; r < im.max_y; ++r) {
     os << im.out_of_bound_px;
@@ -72,13 +75,14 @@ std::ostream& operator<<(std::ostream& os, const Image& im) {
     }
     os << im.out_of_bound_px << '\n';
   }
-  for (int c{im.min_x - 1}; c <= im.max_x; ++c) os << im.out_of_bound_px;
+  for (int c{im.min_x - 1}; c <= im.max_x; ++c)
+    os << im.out_of_bound_px;
   os << '\n';
 
   return os;
 }
 
-std::istream& operator>>(std::istream& is, Image& im) {
+std::istream &operator>>(std::istream &is, Image &im) {
   std::getline(is, im.algorithm);
   is.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 

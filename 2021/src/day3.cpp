@@ -8,21 +8,25 @@ std::tuple<int, std::vector<int>> parseinput() {
   std::vector<int> result;
   size_t width{};
   while (std::getline(file, line)) {
-    if (!width) width = line.length();
+    if (!width)
+      width = line.length();
     result.push_back(std::stoi(line, nullptr, 2));
   }
   return {width, result};
 }
 
-int majority_sift(std::vector<int> ints, const int width, const bool keep_majority) {
+int majority_sift(std::vector<int> ints, const int width,
+                  const bool keep_majority) {
   int pos{width};
   while (ints.size() > 1) {
     --pos;
     const size_t count{ints.size()};
-    const size_t sum =
-        std::count_if(ints.cbegin(), ints.cend(), [pos](int n) { return (n >> pos) & 1; });
+    const size_t sum = std::count_if(ints.cbegin(), ints.cend(),
+                                     [pos](int n) { return (n >> pos) & 1; });
     const bool keep_ones = (keep_majority == (2 * sum >= count));
-    auto keep = [=](int n) { return keep_ones ? ((n >> pos) & 1) ^ 1 : (n >> pos) & 1; };
+    auto keep = [=](int n) {
+      return keep_ones ? ((n >> pos) & 1) ^ 1 : (n >> pos) & 1;
+    };
     std::erase_if(ints, keep);
   }
   return ints[0];
@@ -33,8 +37,8 @@ int main() {
   const size_t num_lines{ints.size()};
   int gamma_rate{};
   for (int pos{}; pos < width; ++pos) {
-    const size_t sum =
-        std::count_if(ints.cbegin(), ints.cend(), [pos](int n) { return (n >> pos) & 1; });
+    const size_t sum = std::count_if(ints.cbegin(), ints.cend(),
+                                     [pos](int n) { return (n >> pos) & 1; });
     gamma_rate |= static_cast<int>(sum > num_lines / 2) << pos;
   }
   // Epsilon rate is just the complement (with masking)

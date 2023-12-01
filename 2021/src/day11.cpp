@@ -14,14 +14,14 @@ class Grid {
   size_t width;
   size_t height;
 
- public:
-  [[nodiscard]] std::vector<Point> neighbours(const Point& point) const {
+public:
+  [[nodiscard]] std::vector<Point> neighbours(const Point &point) const {
     std::vector<Point> nbs;
     for (const int dx : {-1, 0, 1}) {
       for (const int dy : {-1, 0, 1}) {
         const Point npoint = point + Point{dx, dy};
-        if ((dx or dy) and npoint.x >= 0 and npoint.x < width and npoint.y >= 0 and
-            npoint.y < height) {
+        if ((dx or dy) and npoint.x >= 0 and npoint.x < width and
+            npoint.y >= 0 and npoint.y < height) {
           nbs.emplace_back(npoint);
         }
       }
@@ -29,7 +29,7 @@ class Grid {
     return nbs;
   }
 
-  int& operator[](const Point& point) { return field[point.y][point.x]; }
+  int &operator[](const Point &point) { return field[point.y][point.x]; }
 
   [[nodiscard]] std::vector<Point> points() const {
     std::vector<Point> r;
@@ -41,11 +41,11 @@ class Grid {
     return r;
   }
 
-  friend std::istream& operator>>(std::istream& is, Grid& grid);
-  friend std::ostream& operator<<(std::ostream& os, const Grid& grid);
+  friend std::istream &operator>>(std::istream &is, Grid &grid);
+  friend std::ostream &operator<<(std::ostream &os, const Grid &grid);
 };
 
-std::istream& operator>>(std::istream& is, Grid& grid) {
+std::istream &operator>>(std::istream &is, Grid &grid) {
   char ch;
   for (int row{0}; row < 10; ++row) {
     for (int col{0}; col < 10; ++col) {
@@ -58,7 +58,7 @@ std::istream& operator>>(std::istream& is, Grid& grid) {
   return is;
 }
 
-std::ostream& operator<<(std::ostream& os, const Grid& grid) {
+std::ostream &operator<<(std::ostream &os, const Grid &grid) {
   for (int row{0}; row < 10; ++row) {
     for (int col{0}; col < 10; ++col) {
       os << grid.field[row][col];
@@ -68,27 +68,29 @@ std::ostream& operator<<(std::ostream& os, const Grid& grid) {
   return os;
 }
 
-size_t step(Grid& grid) {
+size_t step(Grid &grid) {
   std::unordered_set<Point> flashed;
-  // Using a deque instead of a queue, because a queue is not a basic container, but a container
-  // adapter and has very limited functionality.
+  // Using a deque instead of a queue, because a queue is not a basic container,
+  // but a container adapter and has very limited functionality.
   std::deque<Point> q;
   const auto gps{grid.points()};
-  std::copy(std::make_move_iterator(gps.begin()), std::make_move_iterator(gps.end()),
-            std::back_inserter(q));
+  std::copy(std::make_move_iterator(gps.begin()),
+            std::make_move_iterator(gps.end()), std::back_inserter(q));
 
   int newflashes{};
   while (!q.empty()) {
     const Point p{q.front()};
     q.pop_front();
-    if (!flashed.contains(p)) grid[p]++;
+    if (!flashed.contains(p))
+      grid[p]++;
     if (grid[p] > 9) {
       grid[p] = 0;
       flashed.insert(p);
       newflashes++;
       auto nbs = grid.neighbours(p);
-      for (const Point& nb : nbs) {
-        if (!flashed.contains(nb)) q.push_back(nb);
+      for (const Point &nb : nbs) {
+        if (!flashed.contains(nb))
+          q.push_back(nb);
       }
     }
   }
