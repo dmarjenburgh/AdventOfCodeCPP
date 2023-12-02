@@ -4,6 +4,7 @@
 #include <ranges>
 #include <regex>
 #include <string>
+#include <tuple>
 
 struct Draw {
   int red{};
@@ -16,25 +17,21 @@ struct Game {
   std::vector<Draw> draws;
 };
 
+const std::unordered_map<std::string, int Draw::*> colorMap{
+    {"red", &Draw::red}, {"green", &Draw::green}, {"blue", &Draw::blue}};
+
 Draw parseRGB(const std::string_view s) {
   std::regex re{R"((\d+) (\w+))"};
   using svi = std::string_view::iterator;
   auto mbegin = std::regex_iterator<svi>(s.cbegin(), s.cend(), re);
   auto mend = std::regex_iterator<svi>();
-  std::array<int, 3> result;
+
   Draw d;
   for (auto it{mbegin}; it != mend; ++it) {
     const std::string clr{(*it)[2]};
     const int n{std::stoi((*it)[1])};
-    if (clr == "red") {
-      d.red = n;
-    } else if (clr == "green") {
-      d.green = n;
-    } else if (clr == "blue") {
-      d.blue = n;
-    } else {
-      throw std::runtime_error("Unknown colour: " + clr);
-    }
+
+    d.*(colorMap.at(clr)) = n;
   }
   return d;
 }
@@ -60,14 +57,16 @@ bool possibleGame(const Game &g) {
   });
 }
 
+
 int minimumPower(const Game &g) {
-  int min_red =
-      std::ranges::max(g.draws, {}, [](auto &&d) { return d.red; }).red;
-  int min_green =
-      std::ranges::max(g.draws, {}, [](auto &&d) { return d.green; }).green;
-  int min_blue =
-      std::ranges::max(g.draws, {}, [](auto &&d) { return d.blue; }).blue;
-  return min_red * min_green * min_blue;
+  auto members = std::tuple(&Draw::red, &Draw::green, &Draw::blue);
+
+  int minPower = 1;
+  std::apply([&](auto... member) {
+    ((minPower *= std::ranges::max(g.draws, {}, [member](auto&& draw) { return draw.*member; }).*member), ...);
+  }, members);
+
+  return minPower;
 }
 
 int main() {
