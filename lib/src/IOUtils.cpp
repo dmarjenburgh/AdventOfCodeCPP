@@ -13,3 +13,9 @@ std::vector<std::string> ReadAllLines(const std::filesystem::path &path) {
     }
     return lines;
 }
+
+std::string ReadFile(const std::filesystem::path &path) {
+    std::ifstream f{path};
+    std::string str{std::istreambuf_iterator<char>(f), std::istreambuf_iterator<char>()};
+    return str;
+}
