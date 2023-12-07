@@ -5,54 +5,42 @@
 #include <string>
 #include <ranges>
 
-
 namespace ranges = std::ranges;
+using ResourceMapping  = std::vector<std::array<long, 3>>;
 
 struct Range {
     long start;
     long end;
 };
 
-struct ResourceMapping {
-    std::vector<std::array<long, 3>> mappings;
-};
-
-auto create_mapper_fn(const ResourceMapping &resource_mapping) {
-    return [&resource_mapping](long v) -> long {
-        for (auto [dest_start, source_start, length]: resource_mapping.mappings) {
-            if (v >= source_start && v < source_start + length) {
-                return dest_start + (v - source_start);
-            }
-        }
-        return v;
-    };
-}
-
-std::vector<Range> map_range(const Range &r, const ResourceMapping &rm) {
+std::vector<Range> map_range(Range r, const ResourceMapping &rm) {
     std::vector<Range> result;
-    for (const auto [dest_start, source_start, length]: rm.mappings) {
+    for (const auto [dest_start, source_start, length]: rm) {
+        if (r.start >= r.end) {
+            break;
+        }
         // Part before mapping range, from r.start to source_start
-        if (r.start < source_start && r.end >= source_start) {
-            result.push_back({r.start, source_start});
+        long r_bound{std::min(r.end, source_start)};
+        if (r.start < source_start) {
+            result.push_back({r.start, r_bound});
+            r.start = r_bound;
         }
         // Overlapping part, from max(source_start, r.start) to min(source_start+length, r.end)
-        {
+        if (r.start < source_start + length && r.end > source_start) {
             long range_start{std::max(source_start, r.start)};
             long range_end{std::min(source_start + length, r.end)};
-            if (range_start < range_end) {
-                result.push_back({range_start, range_end});
-            }
+            result.push_back({range_start + dest_start - source_start, range_end + dest_start - source_start});
+            r.start = range_end;
         }
-        // Trailing part, from source_start + length to r.end
-        if (source_start + length < r.end) {
-            result.push_back({source_start + length, r.end});
-        }
+    }
+    // Trailing part
+    if (r.start < r.end) {
+        result.push_back({r.start, r.end});
     }
     return result;
 }
 
 std::pair<std::vector<long>, std::vector<ResourceMapping>> parse_lines(const std::vector<std::string> &lines) {
-
     // Parse seeds
     std::vector<long> seeds;
     std::istringstream seedStream(lines[0].substr(lines[0].find(':') + 1));
@@ -74,51 +62,50 @@ std::pair<std::vector<long>, std::vector<ResourceMapping>> parse_lines(const std
             if (!(mappingStream >> a >> b >> c)) {
                 currentMapping = nullptr;
             } else {
-                currentMapping->mappings.push_back({a, b, c});
+                currentMapping->push_back({a, b, c});
             }
         }
     }
-
+    for (auto &m: mappings) {
+        ranges::sort(m, {}, [](auto &m) { return m[1]; });
+    }
     return {seeds, mappings};
 }
 
-long seed_to_location(long seed_value, const std::vector<ResourceMapping> &resource_mappings) {
-    long result{seed_value};
-    for (const auto &rm: resource_mappings) {
-        result = create_mapper_fn(rm)(result);
-    }
+std::vector<Range> to_ranges(const std::vector<long> &nums) {
+    std::vector<Range> result;
+    ranges::transform(nums, std::back_inserter(result), [](long n) { return Range{n, n + 1}; });
+    ranges::sort(result, {}, [](auto &r) { return r.start; });
     return result;
 }
 
-std::vector<long> expand_seeds(const std::vector<long> &seeds) {
-    std::vector<long> expanded;
+long seed_to_location(const std::vector<Range> &seeds, const std::vector<ResourceMapping> &resource_mappings) {
+    std::vector<Range> acc{seeds};
+    for (const auto &mapping: resource_mappings) {
+        auto next_r = acc | std::views::transform([&mapping](auto &r) {
+            return map_range(r, mapping);
+        }) | std::views::join | std::views::common;
+        acc = std::vector<Range>{next_r.begin(), next_r.end()};
+        ranges::sort(acc, {}, [](auto &r) { return r.start; });
+    }
+    return acc[0].start;
+}
+
+std::vector<Range> expand_seeds(const std::vector<long> &seeds) {
+    std::vector<Range> result;
 
     for (long i{}; i < seeds.size(); i += 2) {
         long start_value = seeds[i];
         long length = seeds[i + 1];
-
-        for (long j{}; j < length; ++j) {
-            expanded.push_back(start_value + j);
-        }
+        result.emplace_back(start_value, start_value + length);
     }
-
-    return expanded;
+    ranges::sort(result, {}, [](auto &r) { return r.start; });
+    return result;
 }
 
 int main() {
     const auto &lines{ReadAllLines("assets/input5.txt")};
     auto [seeds, resource_mappings] = parse_lines(lines);
-
-    auto transformed_seeds = seeds | std::views::transform([&resource_mappings](long seed) {
-        return seed_to_location(seed, resource_mappings);
-    });
-
-    std::cout << "Part 1: " << std::ranges::min(transformed_seeds) << '\n';
-
-    const auto expanded_seeds{expand_seeds(seeds)};
-    auto transformed_seeds2 = expanded_seeds | std::views::transform([&resource_mappings](long seed) {
-        return seed_to_location(seed, resource_mappings);
-    });
-    std::cout << "Part 2: " << std::ranges::min(transformed_seeds2) << '\n';
-
+    std::cout << "Part 1: " << seed_to_location(to_ranges(seeds), resource_mappings) << '\n';
+    std::cout << "Part 2: " << seed_to_location(expand_seeds(seeds), resource_mappings) << '\n';
 }
