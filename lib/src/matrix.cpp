@@ -1,5 +1,5 @@
-#include <iostream>
 #include "lib/matrix.hpp"
+#include <iostream>
 
 Point& Point::operator+=(const Point& rhs) {
   x += rhs.x;
