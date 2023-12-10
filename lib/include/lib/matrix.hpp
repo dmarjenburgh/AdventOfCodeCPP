@@ -8,6 +8,7 @@ struct Point {
   int y;
 
   Point& operator+=(const Point& rhs);
+  Point operator-() const;
   friend Point operator+(const Point& lhs, const Point& rhs);
   auto operator<=>(const Point&) const = default;
 };

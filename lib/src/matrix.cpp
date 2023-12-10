@@ -9,6 +9,10 @@ Point& Point::operator+=(const Point& rhs) {
 
 Point operator+(const Point& lhs, const Point& rhs) { return Point{lhs.x + rhs.x, lhs.y + rhs.y}; }
 
+Point Point::operator-() const {
+    return Point(-x, -y);
+}
+
 std::ostream& operator<<(std::ostream& os, const Point& point) {
   os << '(' << point.x << "," << point.y << ')';
   return os;
