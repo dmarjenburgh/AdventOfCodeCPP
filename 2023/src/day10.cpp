@@ -5,7 +5,7 @@
 #include <unordered_set>
 #include <iostream>
 #include <stack>
-#include <algorithm>
+#include <optional>
 
 namespace ranges = std::ranges;
 using Grid = std::vector<std::string>;
@@ -67,16 +67,15 @@ std::tuple<Points, int> walk_loop(const Grid &grid) {
     int final_cw_turns = (start_dir - dir + 4) % 4;
     num_turns += final_cw_turns == 3 ? -1 : final_cw_turns;
     // Num turns should be +4 for positive orientation or -4 for negative orientation.
-    return {points, num_turns > 0 ? start_dir : (start_dir + 2) % 4};
+    // For a negative orientation, we go in the opposite direction as we ended.
+    return {points, num_turns > 0 ? start_dir : (dir + 2) % 4};
 }
 
 Points connected_component(const Grid &grid, const Points &boundary, const Point &start) {
     Points component;
-    if (boundary.contains(start)) {
-        return Points{boundary};
-    }
     std::stack<Point> stack;
     stack.push(start);
+
     while (!stack.empty()) {
         const Point pos{stack.top()};
         stack.pop();
@@ -94,104 +93,56 @@ Points connected_component(const Grid &grid, const Points &boundary, const Point
     return component;
 }
 
-std::vector<Points> find_connected_components(const Grid &grid, const Points &boundary) {
-    std::vector<Points> all_components;
-    for (int row{}; row < grid.size(); row++) {
-        for (int col{}; col < grid[row].size(); col++) {
-            if (!boundary.contains({col, row}) and
-                !ranges::any_of(all_components, [&row, &col](auto &c) { return c.contains({col, row}); })) {
-                all_components.push_back(connected_component(grid, boundary, {col, row}));
-            }
-        }
+constexpr std::string_view corner_pipes{"JLF7"};
+
+void expand_interior_point_set(const Grid &grid, const Points &loop, Points &interior, const Point &p) {
+    if (loop.contains(p) or interior.contains(p)) {
+        return;
     }
-    return all_components;
+    Points component{connected_component(grid, loop, p)};
+    interior.insert(component.begin(), component.end());
 }
 
-void merge_component(const std::vector<Points> &components, std::unordered_set<Point> &set, const Point &p) {
-    for (const auto &component: components) {
-        if (component.contains(p)) {
-            if (!set.contains(p)) {
-                set.insert(component.begin(), component.end());
-            }
-            return;
-        }
+std::optional<std::array<int, 2>> get_neighbouring_interior_points(const int dir, const char pipe) {
+    if (corner_pipes[dir] == pipe) {
+        return std::optional<std::array<int, 2>>{{(dir + 1) % 4, (dir + 2) % 4}};
     }
+    return std::nullopt;
 }
 
-std::tuple<bool, Point, Point> find_int_ext_points(const int dir, const char pipe) {
-    // Points to the 'left' are exterior. Points to the 'right' are interior.
-    if (pipe == 'J') {
-        if (dir == 0) {
-            return {true, {1, 0}, {0, 1}};
-        } else if (dir == 3) {
-            return {false, {1, 0}, {0, 1}};
-        }
-    } else if (pipe == 'L') {
-        if (dir == 0) {
-            return {false, {-1, 0}, {0, 1}};
-        } else if (dir == 1) {
-            return {true, {-1, 0}, {0, 1}};
-        }
-    } else if (pipe == 'F') {
-        if (dir == 1) {
-            return {false, {-1, 0}, {-1, 0}};
-        } else if (dir == 2) {
-            return {true, {-1, 0}, {-1, 0}};
-        }
-    } else if (pipe == '7') {
-        if (dir == 2) {
-            return {false, {1, 0}, {0, -1}};
-        } else if (dir == 3) {
-            return {true, {1, 0}, {0, -1}};
-        }
-    }
-    throw std::runtime_error("Wrong pipe");
-}
-
-std::pair<std::unordered_set<Point>, std::unordered_set<Point>>
-identify_interior_exterior_components(
-        const Grid &grid,
-        const Points &loop,
-        const int start_dir,
-        const std::vector<Points> &components) {
+Points find_interior_points(const Grid &grid, const Points &loop, const int start_dir) {
     const Point start{find_starting_position(grid)};
-
-    std::unordered_set<Point> exterior;
-    std::unordered_set<Point> interior;
-
+    Points interior;
     Point pos{start};
     int dir{start_dir};
     int num_turns{};
+
     do {
         pos += directions[dir];
         char pipe{grid[pos.y][pos.x]};
         update_direction(dir, num_turns, pipe);
-        if (contains("JFL7", pipe)) {
-            auto [is_interior, p1, p2] = find_int_ext_points(dir, pipe);
-            if (!loop.contains(pos + p1)) {
-                merge_component(components, is_interior ? interior : exterior, pos + p1);
-            }
-            if (!loop.contains(pos + p2)) {
-                merge_component(components, is_interior ? interior : exterior, pos + p2);
+        auto int_points{get_neighbouring_interior_points(dir, pipe)};
+        if (int_points) {
+            for (auto d: int_points.value()) {
+                const Point p{pos + directions[d]};
+                expand_interior_point_set(grid, loop, interior, p);
             }
         }
+
     } while (grid[pos.y][pos.x] != 'S');
-    return {interior, exterior};
+    return interior;
 }
 
 int main() {
     // Algorithm
     // 1) Walk the loop and keep track of the length and orientation (cw or ccw). Solution to part 1 is length/2.
-    // 2) Go through the whole grid and find the connected components, using the loop as a boundary.
-    // 3) Now we need to find which components are interior and exterior.
-    //    We walk the loop again. Points to the right are interior, and points to the left are exterior.
-    //    Gather all the components with points in the interior/exterior sets. Solution to part 2 is
-    //    the count of the interior points set.
-    const auto &grid{ReadAllLines("assets/input10.txt")};
+    // 2) We walk the loop again in the positive orientation (clockwise). Points to the right are interior.
+    //    We only need to consider corner-pipes. When a new interior point is found, expand to all connected points
+    //    that are not part of the loop. The solution to part 1 is the count of the interior points set.
+    const auto grid{ReadAllLines("assets/input10.txt")};
     const auto &[loop, start_dir] = walk_loop(grid);
     std::cout << "Part 1: " << loop.size() / 2 << '\n';
-    const auto &all_connected_components{find_connected_components(grid, loop)};
-    const auto &[interior, exterior] = identify_interior_exterior_components(grid, loop, start_dir,
-                                                                             all_connected_components);
+    const auto interior{find_interior_points(grid, loop, start_dir)};
     std::cout << "Part 2: " << interior.size() << '\n';
+    return 0;
 }
