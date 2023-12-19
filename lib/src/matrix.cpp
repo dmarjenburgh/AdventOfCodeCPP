@@ -31,3 +31,6 @@ size_t std::hash<Point>::operator()(const Point &point) const noexcept {
     size_t h2 = std::hash<int>{}(point.y);
     return h1 ^ (h2 + 0x9e3779b9 + (h1 << 6) + (h1 >> 2));
 }
+Point operator*(const Point & point, const int scalar){
+    return Point{point.x*scalar, point.y*scalar};
+}
